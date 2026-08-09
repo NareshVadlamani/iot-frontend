@@ -11,29 +11,42 @@ interface LogMessage {
 }
 
 // Replace with your Render URL or local URL
-const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const SOCKET_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:5000"
+    : process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function LiveLogs() {
   const [logs, setLogs] = useState<LogMessage[]>([]);
   const [connected, setConnected] = useState(false);
 
+  console.log("SOCKET_URL", { SOCKET_URL });
+
   useEffect(() => {
-    // Connect to Socket.IO backend
     const socket: Socket = io(SOCKET_URL, {
-      transports: ["websocket", "polling"],
+      // 1. Start with polling, then auto-upgrade to websocket
+      transports: ["polling", "websocket"],
+      // 2. Prevent socket from failing instantly during Render cold starts
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
+      withCredentials: true,
     });
 
     socket.on("connect", () => {
+      console.log("✅ Connected to backend Socket.IO");
       setConnected(true);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Socket connection error:", err.message);
     });
 
     socket.on("disconnect", () => {
       setConnected(false);
     });
 
-    // Listen for incoming live logs from Express backend
-    socket.on("new_image", (log: LogMessage) => {
-      setLogs((prevLogs) => [log, ...prevLogs]); // Prepend latest log
+    socket.on("new_log", (log) => {
+      setLogs((prev) => [log, ...prev]);
     });
 
     return () => {
