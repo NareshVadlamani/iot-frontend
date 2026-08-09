@@ -56,25 +56,11 @@ const linkStyle: React.CSSProperties = {
   fontWeight: 500,
 };
 
-const userStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "12px",
-};
-
 const logoStyle: React.CSSProperties = {
   width: "38px",
   height: "38px",
   objectFit: "cover",
   borderRadius: "8px",
-};
-
-const avatarStyle: React.CSSProperties = {
-  width: "40px",
-  height: "40px",
-  borderRadius: "50%",
-  objectFit: "cover",
-  border: "2px solid #475569",
 };
 
 const titleStyle: React.CSSProperties = {
@@ -85,16 +71,6 @@ const titleStyle: React.CSSProperties = {
 const subtitleStyle: React.CSSProperties = {
   fontSize: "13px",
   color: "#94a3b8",
-};
-
-const userNameStyle: React.CSSProperties = {
-  fontSize: "15px",
-  fontWeight: 600,
-};
-
-const userLogStyle: React.CSSProperties = {
-  fontSize: "12px",
-  color: "#cbd5e1",
 };
 
 export default Header;
