@@ -2,7 +2,7 @@ import React from "react";
 
 const navLinks = [
   { title: "Home", href: "/" },
-  { title: "Profile", href: "/profile" },
+  { title: "History", href: "/history" },
 ];
 
 const Header: React.FC = () => {
