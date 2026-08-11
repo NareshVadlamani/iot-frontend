@@ -105,7 +105,7 @@ export default async function History({ searchParams }: PageProps) {
       style={{
         padding: "24px",
         fontFamily: "system-ui, -apple-system, sans-serif",
-        color: "#e2e8f0",
+        color: "#000",
       }}
     >
       {/* Header */}
