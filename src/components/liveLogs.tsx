@@ -45,7 +45,7 @@ export default function LiveLogs() {
       setConnected(false);
     });
 
-    socket.on("new_log", (log) => {
+    socket.on("entry_log", (log) => {
       setLogs((prev) => [log, ...prev]);
     });
 
