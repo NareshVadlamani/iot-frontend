@@ -1,4 +1,8 @@
+"use client";
+
 import { HistoryLogMessage } from "@/src/app/actions/history";
+import { useState } from "react";
+import LogDetailView from "../LogView";
 
 const TableHead = () => {
   return (
@@ -58,6 +62,8 @@ const TableHead = () => {
 };
 
 export const HistoryTable = ({ logs }: { logs: HistoryLogMessage[] }) => {
+  const [selectedLog, setSelectedLog] = useState<HistoryLogMessage>();
+
   return (
     <div
       style={{
@@ -68,108 +74,119 @@ export const HistoryTable = ({ logs }: { logs: HistoryLogMessage[] }) => {
         boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
       }}
     >
-      <div style={{ maxHeight: "700px", overflowY: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "13px",
-            fontFamily:
-              'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-          }}
-        >
-          <TableHead />
-          <tbody>
-            {logs.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  style={{
-                    padding: "48px",
-                    textAlign: "center",
-                    color: "#71717a",
-                    fontSize: "14px",
-                  }}
-                >
-                  Waiting for incoming logs...
-                </td>
-              </tr>
-            ) : (
-              logs.map((log, index) => {
-                const { eventId, reason, imageUrl, createdAt } = log || {};
-
-                return (
-                  <tr
-                    key={index}
+      {selectedLog ? (
+        <LogDetailView log={selectedLog} />
+      ) : (
+        <div style={{ maxHeight: "700px", overflowY: "auto" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              textAlign: "left",
+              fontSize: "13px",
+              fontFamily:
+                'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+            }}
+          >
+            <TableHead />
+            <tbody>
+              {logs.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
                     style={{
-                      borderBottom: "1px solid #18181b",
-                      transition: "background 0.15s ease",
+                      padding: "48px",
+                      textAlign: "center",
+                      color: "#71717a",
+                      fontSize: "14px",
                     }}
                   >
-                    {/* Timestamp */}
-                    <td
+                    Waiting for incoming logs...
+                  </td>
+                </tr>
+              ) : (
+                logs.map((log, index) => {
+                  const { eventId, reason, imageUrl, createdAt } = log || {};
+
+                  return (
+                    <tr
+                      key={index}
                       style={{
-                        padding: "12px 16px",
-                        color: "#71717a",
-                        whiteSpace: "nowrap",
+                        borderBottom: "1px solid #18181b",
+                        transition: "background 0.15s ease",
                       }}
+                      onClick={() => setSelectedLog(log)}
                     >
-                      <img
-                        src={imageUrl}
-                        alt="Event preview"
+                      {/* Timestamp */}
+                      <td
                         style={{
-                          width: "100px",
-                          height: "100px",
-                          borderRadius: "6px",
-                          objectFit: "cover",
-                          border: "1px solid #3f3f46",
-                          backgroundColor: "#18181b",
-                          flexShrink: 0,
-                        }}
-                      />
-                    </td>
-
-                    {/* Level Badge */}
-                    <td style={{ padding: "12px 16px", whiteSpace: "nowrap" }}>
-                      {createdAt && new Date(createdAt).toLocaleTimeString()}
-                    </td>
-
-                    {/* Message */}
-                    <td
-                      style={{
-                        padding: "12px 16px",
-                        color: "#f4f4f5",
-                        fontWeight: "400",
-                      }}
-                    >
-                      <div style={{ color: "#e4e4e7" }}>
-                        <strong style={{ color: "#a1a1aa" }}>Reason:</strong>{" "}
-                        {reason}
-                      </div>
-                    </td>
-
-                    {/* Payload / Data Details */}
-                    <td style={{ padding: "12px 16px" }}>
-                      <code
-                        style={{
-                          background: "#27272a",
-                          padding: "1px 5px",
-                          borderRadius: "4px",
-                          color: "#f4f4f5",
-                          fontSize: "11px",
+                          padding: "12px 16px",
+                          color: "#71717a",
+                          whiteSpace: "nowrap",
                         }}
                       >
-                        {eventId}
-                      </code>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt="Event preview"
+                            style={{
+                              width: "100px",
+                              height: "100px",
+                              borderRadius: "6px",
+                              objectFit: "cover",
+                              border: "1px solid #3f3f46",
+                              backgroundColor: "#18181b",
+                              flexShrink: 0,
+                            }}
+                          />
+                        ) : (
+                          "No Preview"
+                        )}
+                      </td>
+
+                      {/* Level Badge */}
+                      <td
+                        style={{ padding: "12px 16px", whiteSpace: "nowrap" }}
+                      >
+                        {createdAt && new Date(createdAt).toLocaleTimeString()}
+                      </td>
+
+                      {/* Message */}
+                      <td
+                        style={{
+                          padding: "12px 16px",
+                          color: "#f4f4f5",
+                          fontWeight: "400",
+                        }}
+                      >
+                        <div style={{ color: "#e4e4e7" }}>
+                          <strong style={{ color: "#a1a1aa" }}>Reason:</strong>{" "}
+                          {reason}
+                        </div>
+                      </td>
+
+                      {/* Payload / Data Details */}
+                      <td style={{ padding: "12px 16px" }}>
+                        <code
+                          style={{
+                            background: "#27272a",
+                            padding: "1px 5px",
+                            borderRadius: "4px",
+                            color: "#f4f4f5",
+                            fontSize: "11px",
+                          }}
+                        >
+                          {eventId}
+                        </code>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
