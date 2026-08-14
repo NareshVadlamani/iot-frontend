@@ -8,13 +8,19 @@ const navLinks = [
 const Header: React.FC = () => {
   return (
     <header style={headerStyle}>
-      <div style={brandStyle}>
-        <img src="/images/logo.png" alt="App logo" style={logoStyle} />
-        <div>
-          <div style={titleStyle}>IoT Dashboard</div>
-          <div style={subtitleStyle}>User logs available</div>
+      <a href="/">
+        <div style={brandStyle}>
+          <img
+            src="https://res.cloudinary.com/k79u1xpr/image/upload/v1786747199/logo_compressed.jpg"
+            alt="App logo"
+            style={logoStyle}
+          />
+          <div>
+            <div style={titleStyle}>IoT Dashboard</div>
+            <div style={subtitleStyle}>User logs available</div>
+          </div>
         </div>
-      </div>
+      </a>
 
       <nav style={navStyle}>
         {navLinks.map((link) => (

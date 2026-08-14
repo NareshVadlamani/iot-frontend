@@ -1,17 +1,10 @@
 "use client";
 
+import { HistoryLogMessage } from "@/src/app/actions/history";
 import { useState } from "react";
 
-export interface LogDetail {
-  eventId?: string;
-  reason?: string;
-  imageUrl?: string;
-  device?: string;
-  location?: string;
-}
-
 interface LogDetailViewProps {
-  log: LogDetail;
+  log: HistoryLogMessage;
   onBack?: () => void;
 }
 

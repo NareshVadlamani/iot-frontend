@@ -1,5 +1,3 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 export interface HistoryLogMessage {
   eventId?: string;
   reason?: string;
@@ -41,6 +39,25 @@ export const fetchHistoryLogs = async (
   }
 };
 
-interface PageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
+export const fetchEventById = async (
+  eventId: string,
+): Promise<{ data?: HistoryLogMessage }> => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/usersEntry/get?eventId=${eventId}`,
+      {
+        cache: "no-store", // Or next: { revalidate: 10 } depending on your caching strategy
+      },
+    );
+
+    if (!res.ok) throw new Error("Failed to fetch logs");
+    console.log("res", { res, eventId });
+    return res.json();
+  } catch (error) {
+    console.error("Failed to connect to backend:", error);
+    // Return empty fallback structure instead of crashing with 500
+    return {
+      data: undefined,
+    };
+  }
+};
