@@ -1,8 +1,6 @@
 "use client";
 
 import { HistoryLogMessage } from "@/src/app/actions/history";
-import { useState } from "react";
-import LogDetailView from "../LogView";
 import { useRouter } from "next/navigation";
 
 const TableHead = () => {
