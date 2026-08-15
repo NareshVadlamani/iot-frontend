@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation";
 
 export interface LogMessage {
@@ -12,250 +14,181 @@ export interface LogMessage {
   };
 }
 
-const TableHead = () => {
-  return (
-    <thead
-      style={{
-        position: "sticky",
-        top: 0,
-        background: "#18181b",
-        borderBottom: "1px solid #27272a",
-        zIndex: 1,
-      }}
-    >
-      <tr>
-        <th
-          style={{
-            padding: "12px 16px",
-            width: "110px",
-            color: "#a1a1aa",
-            fontWeight: "600",
-          }}
-        >
-          Time
-        </th>
-        <th
-          style={{
-            padding: "12px 16px",
-            width: "100px",
-            color: "#a1a1aa",
-            fontWeight: "600",
-          }}
-        >
-          Level
-        </th>
-        <th
-          style={{
-            padding: "12px 16px",
-            color: "#a1a1aa",
-            fontWeight: "600",
-          }}
-        >
-          Message
-        </th>
-        <th
-          style={{
-            padding: "12px 16px",
-            width: "320px",
-            color: "#a1a1aa",
-            fontWeight: "600",
-          }}
-        >
-          Payload / Details
-        </th>
-      </tr>
-    </thead>
-  );
-};
-
 export const LogTable = ({ logs }: { logs: LogMessage[] }) => {
   const router = useRouter();
+
   const handleEntryClick = (eventId?: string) => {
     if (!eventId) return;
     router.push(`/entry/${eventId}`);
   };
 
   const getLevelBadge = (level: LogMessage["level"]) => {
-    const config = {
-      success: {
-        bg: "rgba(34, 197, 94, 0.15)",
-        color: "#4ade80",
-        border: "rgba(34, 197, 94, 0.3)",
-      },
-      error: {
-        bg: "rgba(239, 68, 68, 0.15)",
-        color: "#f87171",
-        border: "rgba(239, 68, 68, 0.3)",
-      },
-      info: {
-        bg: "rgba(59, 130, 246, 0.15)",
-        color: "#60a5fa",
-        border: "rgba(59, 130, 246, 0.3)",
-      },
-    }[level] || {
-      bg: "rgba(156, 163, 175, 0.15)",
-      color: "#9ca3af",
-      border: "rgba(156, 163, 175, 0.3)",
-    };
+    const styles =
+      {
+        success: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+        error: "bg-red-500/15 text-red-400 border-red-500/30",
+        info: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+      }[level] || "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
 
     return (
       <span
-        style={{
-          backgroundColor: config.bg,
-          color: config.color,
-          border: `1px solid ${config.border}`,
-          padding: "3px 8px",
-          borderRadius: "12px",
-          fontSize: "11px",
-          fontWeight: "600",
-          textTransform: "uppercase",
-          letterSpacing: "0.5px",
-        }}
+        className={`px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider border ${styles}`}
       >
         {level}
       </span>
     );
   };
 
+  if (!logs || logs.length === 0) {
+    return (
+      <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-12 text-center text-zinc-500 text-sm shadow-xl">
+        Waiting for incoming logs...
+      </div>
+    );
+  }
+
   return (
-    <div
-      style={{
-        background: "#09090b",
-        border: "1px solid #27272a",
-        borderRadius: "10px",
-        overflow: "hidden",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-      }}
-    >
-      <div style={{ maxHeight: "500px", overflowY: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            textAlign: "left",
-            fontSize: "13px",
-            fontFamily:
-              'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-          }}
-        >
-          <TableHead />
-          <tbody>
-            {logs.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  style={{
-                    padding: "48px",
-                    textAlign: "center",
-                    color: "#71717a",
-                    fontSize: "14px",
-                  }}
+    <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
+      {/* MOBILE VIEW: List Cards (< 768px) */}
+      <div className="block md:hidden divide-y divide-zinc-900">
+        {logs.map((log, index) => {
+          const { eventId, reason, imageUrl } = log.data || {};
+
+          return (
+            <div
+              key={eventId || index}
+              onClick={() => handleEntryClick(eventId)}
+              className="p-4 flex flex-col gap-2.5 active:bg-zinc-900/80 transition-colors cursor-pointer"
+            >
+              {/* Top Row: Level & Timestamp */}
+              <div className="flex items-center justify-between">
+                {getLevelBadge(log.level)}
+                <span className="text-xs text-zinc-500 font-mono">
+                  {log.timestamp
+                    ? new Date(log.timestamp).toLocaleTimeString()
+                    : ""}
+                </span>
+              </div>
+
+              {/* Message */}
+              <p className="text-sm font-medium text-zinc-100 leading-snug">
+                {log.message}
+              </p>
+
+              {/* Payload Box (if present) */}
+              {log.data && (
+                <div className="flex items-center justify-between gap-3 bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-800/60 mt-1">
+                  <div className="text-xs space-y-1 overflow-hidden min-w-0 flex-1">
+                    {reason && (
+                      <p className="text-zinc-300 font-sans truncate">
+                        <span className="text-zinc-500 font-medium">
+                          Reason:{" "}
+                        </span>
+                        {reason}
+                      </p>
+                    )}
+                    {eventId && (
+                      <p className="text-zinc-400 font-mono text-[11px]">
+                        <span className="text-zinc-500">Event ID: </span>
+                        <code className="bg-zinc-800 text-zinc-200 px-1.5 py-0.5 rounded border border-zinc-700/50">
+                          {eventId}
+                        </code>
+                      </p>
+                    )}
+                  </div>
+
+                  {imageUrl && (
+                    <img
+                      src={imageUrl}
+                      alt="Event preview"
+                      className="w-14 h-14 rounded-md object-cover border border-zinc-700 bg-zinc-900 flex-shrink-0"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* DESKTOP VIEW: Table (≥ 768px) */}
+      <div className="hidden md:block max-h-[500px] overflow-y-auto">
+        <table className="w-full text-left text-xs font-mono border-collapse">
+          <thead className="sticky top-0 bg-zinc-900 border-b border-zinc-800 z-10 text-zinc-400">
+            <tr>
+              <th className="py-3 px-4 w-28 font-semibold">Time</th>
+              <th className="py-3 px-4 w-28 font-semibold">Level</th>
+              <th className="py-3 px-4 font-semibold">Message</th>
+              <th className="py-3 px-4 w-80 font-semibold">
+                Payload / Details
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-zinc-900">
+            {logs.map((log, index) => {
+              const { eventId, reason, imageUrl } = log.data || {};
+
+              return (
+                <tr
+                  key={eventId || index}
+                  onClick={() => handleEntryClick(eventId)}
+                  className="hover:bg-zinc-900/60 transition-colors cursor-pointer"
                 >
-                  Waiting for incoming logs...
-                </td>
-              </tr>
-            ) : (
-              logs.map((log, index) => {
-                const { eventId, reason, imageUrl } = log.data || {};
+                  {/* Timestamp */}
+                  <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
+                    {log.timestamp
+                      ? new Date(log.timestamp).toLocaleTimeString()
+                      : "—"}
+                  </td>
 
-                return (
-                  <tr
-                    key={index}
-                    style={{
-                      borderBottom: "1px solid #18181b",
-                      transition: "background 0.15s ease",
-                    }}
-                    onClick={() => handleEntryClick(eventId)}
-                  >
-                    {/* Timestamp */}
-                    <td
-                      style={{
-                        padding: "12px 16px",
-                        color: "#71717a",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {new Date(log.timestamp).toLocaleTimeString()}
-                    </td>
+                  {/* Level Badge */}
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    {getLevelBadge(log.level)}
+                  </td>
 
-                    {/* Level Badge */}
-                    <td style={{ padding: "12px 16px", whiteSpace: "nowrap" }}>
-                      {getLevelBadge(log.level)}
-                    </td>
+                  {/* Message */}
+                  <td className="py-3 px-4 text-zinc-200 font-sans font-normal">
+                    {log.message}
+                  </td>
 
-                    {/* Message */}
-                    <td
-                      style={{
-                        padding: "12px 16px",
-                        color: "#f4f4f5",
-                        fontWeight: "400",
-                      }}
-                    >
-                      {log.message}
-                    </td>
-
-                    {/* Payload / Data Details */}
-                    <td style={{ padding: "12px 16px" }}>
-                      {log.data ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "12px",
-                          }}
-                        >
-                          <div style={{ fontSize: "12px", lineHeight: "1.4" }}>
-                            {reason && (
-                              <div style={{ color: "#e4e4e7" }}>
-                                <strong style={{ color: "#a1a1aa" }}>
-                                  Reason:
-                                </strong>{" "}
-                                {reason}
-                              </div>
-                            )}
-                            {eventId && (
-                              <div>
-                                <span style={{ color: "#a1a1aa" }}>
-                                  Event ID:{" "}
-                                </span>
-                                <code
-                                  style={{
-                                    background: "#27272a",
-                                    padding: "1px 5px",
-                                    borderRadius: "4px",
-                                    color: "#f4f4f5",
-                                    fontSize: "11px",
-                                  }}
-                                >
-                                  {eventId}
-                                </code>
-                              </div>
-                            )}
-                          </div>
-                          {imageUrl && (
-                            <img
-                              src={imageUrl}
-                              alt="Event preview"
-                              style={{
-                                width: "80px",
-                                height: "80px",
-                                borderRadius: "6px",
-                                objectFit: "cover",
-                                border: "1px solid #3f3f46",
-                                backgroundColor: "#18181b",
-                                flexShrink: 0,
-                              }}
-                            />
+                  {/* Payload / Details */}
+                  <td className="py-3 px-4">
+                    {log.data ? (
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-xs leading-relaxed font-sans">
+                          {reason && (
+                            <div className="text-zinc-300">
+                              <strong className="text-zinc-500 font-semibold">
+                                Reason:{" "}
+                              </strong>
+                              {reason}
+                            </div>
+                          )}
+                          {eventId && (
+                            <div className="text-zinc-500 font-mono text-[11px] mt-0.5">
+                              <span>Event ID: </span>
+                              <code className="bg-zinc-800 text-zinc-200 px-1.5 py-0.5 rounded border border-zinc-700/50">
+                                {eventId}
+                              </code>
+                            </div>
                           )}
                         </div>
-                      ) : (
-                        <span style={{ color: "#52525b" }}>—</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+
+                        {imageUrl && (
+                          <img
+                            src={imageUrl}
+                            alt="Event preview"
+                            className="w-16 h-16 rounded-md object-cover border border-zinc-700 bg-zinc-900 flex-shrink-0"
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-zinc-600">—</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
