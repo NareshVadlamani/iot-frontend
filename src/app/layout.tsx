@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="flex flex-col flex-1 items-center  font-sans dark:bg-black bg-white">
           <main className=" w-full max-w-3xl dark:bg-black h-100vh bg-gray-300 h-screen">
             <Header />
-            {children}
+            <div className="pt-20">{children}</div>
           </main>
         </div>
       </body>

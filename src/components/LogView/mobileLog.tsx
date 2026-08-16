@@ -22,7 +22,7 @@ export default function MobileLogDetail({ log, onBack }: MobileLogDetailProps) {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-24">
-      <div className="sticky top-0 z-20 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-1 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
         <button
           onClick={onBack}
           className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg active:scale-95 transition-transform"
