@@ -42,6 +42,8 @@ const headerStyle: React.CSSProperties = {
   color: "#f8fafc",
   borderBottom: "1px solid #334155",
   width: "100%",
+  position: "fixed",
+  zIndex: "2",
 };
 
 const brandStyle: React.CSSProperties = {
