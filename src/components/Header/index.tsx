@@ -7,7 +7,7 @@ const navLinks = [
 
 const Header: React.FC = () => {
   return (
-    <header style={headerStyle}>
+    <header style={headerStyle} className="max-w-3xl">
       <a href="/">
         <div style={brandStyle}>
           <img
